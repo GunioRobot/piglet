@@ -19,15 +19,15 @@ describe Field do
       @expressions[type].stub!(:type).and_return(type)
     end
   end
-  
+
   it 'should have an alias' do
     @field.field_alias.should_not be_nil
   end
-  
+
   describe '#type' do
     [:==, :ne, :<, :>, :<=, :>=, :and, :or].each do |op|
       op_str = (op == :ne ? '!=' : op).to_s.upcase
-      
+
       it "knows that a #{op_str} expression always is of type boolean" do
         (@field.send(op, @field)).type.should eql(:boolean)
       end
@@ -36,11 +36,11 @@ describe Field do
     it 'knows that % yields an integer' do
       (@field % 5).type.should eql(:int)
     end
-    
+
     it 'knows that a call to IsEmpty is of type boolean' do
       @field.empty?.type.should eql(:boolean)
     end
-    
+
     it 'knows that the NOT operator yields a boolean' do
       @field.not.type.should eql(:boolean)
     end
@@ -52,17 +52,17 @@ describe Field do
     it 'knows that the "is not null" operator yields a boolean' do
       @field.not_null?.type.should eql(:boolean)
     end
-    
+
     [:int, :long, :float, :double, :chararray, :bytearray].each do |type|
       it "knows that a cast to #{type} is of type #{type}" do
         @field.cast(type).type.should eql(type)
       end
     end
-    
+
     it 'knows that a "matches" expression is always of type boolean' do
       @field.matches(/hello world/).type.should eql(:boolean)
     end
-    
+
     [:int, :long, :float, :double].each do |type|
       it "knows that negating a #{type} yields a #{type}" do
         @expressions[type].neg.type.should eql(type)
@@ -86,7 +86,7 @@ describe Field do
         (@expressions[:int].send(op, @expressions[:double])).type.should eql(:double)
       end
     end
-    
+
     combos = {
       [:int, :int] => :int,
       [:int, :long] => :long,
@@ -95,7 +95,7 @@ describe Field do
       [:long, :float] => :float,
       [:long, :double] => :double
     }
-    
+
     combos.each do |operands, result|
       it "knows that #{operands[0]}/#{operands[1]} yields a #{result}" do
         (@expressions[operands[0]] / @expressions[operands[1]]).type.should eql(result)
@@ -106,5 +106,5 @@ describe Field do
       end
     end
   end
-  
+
 end

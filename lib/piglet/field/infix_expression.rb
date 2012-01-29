@@ -4,9 +4,9 @@ module Piglet
   module Field
     class InfixExpression # :nodoc:
       include Field
-      
+
       attr_reader :operator
-    
+
       def initialize(operator, left_expression, right_expression, options=nil)
         options ||= {}
         @operator, @left_expression, @right_expression = operator, left_expression, right_expression
@@ -17,11 +17,11 @@ module Piglet
         end
         @predecessors = [left_expression, right_expression]
       end
-    
+
       def simple?
         false
       end
-    
+
       def to_s(inner=false)
         if inner
           left  = @left_expression.field_alias
@@ -33,16 +33,16 @@ module Piglet
           if left.respond_to?(:operator) && left.operator != @operator
             left = parenthesise(left)
           end
-        
+
           if right.respond_to?(:operator) && right.operator != @operator
             right = parenthesise(right)
           end
         end
         "#{left} #{@operator} #{right}"
       end
-      
+
     private
-    
+
       def determine_type(left, right)
         left_type = expression_type(left)
         right_type = expression_type(right)

@@ -15,34 +15,34 @@ describe Piglet do
         @interpreter.interpret { store(load('some/path'), 'out') }
         @interpreter.to_pig_latin.should include("LOAD 'some/path'")
       end
-    
+
       it 'outputs a LOAD statement without a USING clause if none specified' do
         @interpreter.interpret { store(load('some/path'), 'out') }
         @interpreter.to_pig_latin.should_not include('USING')
       end
-  
+
       it 'outputs a LOAD statement with a USING clause with a specified function' do
         @interpreter.interpret { store(load('some/path', :using => 'XYZ'), 'out') }
         @interpreter.to_pig_latin.should include("LOAD 'some/path' USING XYZ;")
       end
-  
+
       Piglet::Inout::StorageTypes::LOAD_STORE_FUNCTIONS.each do |symbolic_name, function|
         it "knows that the load method :#{symbolic_name} means #{function}" do
           @interpreter.interpret { store(load('some/path', :using => symbolic_name), 'out') }
           @interpreter.to_pig_latin.should include("LOAD 'some/path' USING #{function};")
         end
       end
-  
+
       it 'outputs a LOAD statement with an AS clause' do
         @interpreter.interpret { store(load('some/path', :schema => %w(a b c)), 'out') }
         @interpreter.to_pig_latin.should include("LOAD 'some/path' AS (a, b, c);")
       end
-  
+
       it 'outputs a LOAD statement with an AS clause with types' do
         @interpreter.interpret { store(load('some/path', :schema => [:a, [:b, :chararray], :c]), 'out') }
         @interpreter.to_pig_latin.should include("LOAD 'some/path' AS (a, b:chararray, c);")
       end
-  
+
       it 'outputs a LOAD statement with an AS clause with types specified as both strings and symbols' do
         @interpreter.interpret { store(load('some/path', :schema => [:a, %w(b chararray), :c]), 'out') }
         @interpreter.to_pig_latin.should include("LOAD 'some/path' AS (a, b:chararray, c);")
@@ -54,17 +54,17 @@ describe Piglet do
         @interpreter.interpret { store(load('some/path'), 'out') }
         @interpreter.to_pig_latin.should match(/STORE \w+ INTO 'out'/)
       end
-    
+
       it 'outputs a STORE statement without a USING clause if none specified' do
         @interpreter.interpret { store(load('some/path'), 'out') }
         @interpreter.to_pig_latin.should_not include("USING")
       end
-    
+
       it 'outputs a STORE statement with a USING clause with a specified function' do
         @interpreter.interpret { store(load('some/path'), 'out', :using => 'XYZ') }
         @interpreter.to_pig_latin.should match(/STORE \w+ INTO 'out' USING XYZ/)
       end
-  
+
       it 'knows that the load method :pig_storage means PigStorage' do
         @interpreter.interpret { store(load('some/path'), 'out', :using => :pig_storage) }
         @interpreter.to_pig_latin.should match(/STORE \w+ INTO 'out' USING PigStorage/)
@@ -78,7 +78,7 @@ describe Piglet do
       end
     end
   end
-  
+
   context 'diagnostic operators:' do
     describe 'ILLUSTRATE' do
       it 'outputs an ILLUSTRATE statement' do
@@ -86,20 +86,20 @@ describe Piglet do
         @interpreter.to_pig_latin.should match(/ILLUSTRATE \w+/)
       end
     end
-  
+
     describe 'DESCRIBE' do
       it 'outputs a DESCRIBE statement' do
         @interpreter.interpret { describe(load('some/path')) }
         @interpreter.to_pig_latin.should match(/DESCRIBE \w+/)
       end
     end
-  
+
     describe 'EXPLAIN' do
       it 'outputs an EXPLAIN statement' do
         @interpreter.interpret { explain(load('some/path')) }
         @interpreter.to_pig_latin.should match(/EXPLAIN \w+/)
       end
-    
+
       it 'outputs an EXPLAIN statement without an alias' do
         @interpreter.interpret { explain }
         @interpreter.to_pig_latin.should match(/EXPLAIN;/)
@@ -114,7 +114,7 @@ describe Piglet do
           @interpreter.interpret { self.send(op, :my_var, 'my_value') }
           @interpreter.to_pig_latin.should match(/%#{op} my_var 'my_value'/)
         end
-      
+
         it "outputs a %#{op} statement with single quotes escaped" do
           @interpreter.interpret { self.send(op, :my_var, "my 'value'") }
           @interpreter.to_pig_latin.should match(/%#{op} my_var 'my \\'value\\''/)
@@ -137,31 +137,31 @@ describe Piglet do
       end
     end
   end
-  
+
   context 'relation operators:' do
     describe 'GROUP' do
       it 'outputs a GROUP statement with one grouping field' do
         @interpreter.interpret { store(load('in').group(:a), 'out') }
         @interpreter.to_pig_latin.should match(/GROUP \w+ BY a/)
       end
-    
+
       it 'outputs a GROUP statement with more than one grouping field' do
         @interpreter.interpret { store(load('in').group(:a, :b, :c), 'out') }
         @interpreter.to_pig_latin.should match(/GROUP \w+ BY \(a, b, c\)/)
       end
-    
+
       it 'outputs a GROUP statement with a PARALLEL clause' do
         @interpreter.interpret { store(load('in').group([:a, :b, :c], :parallel => 3), 'out') }
         @interpreter.to_pig_latin.should match(/GROUP \w+ BY \(a, b, c\) PARALLEL 3/)
       end
     end
-    
+
     describe 'DISTINCT' do
       it 'outputs a DISTINCT statement' do
         @interpreter.interpret { store(load('in').distinct, 'out') }
         @interpreter.to_pig_latin.should match(/DISTINCT \w+/)
       end
-    
+
       it 'outputs a DISTINCT statement with a PARALLEL clause' do
         @interpreter.interpret { store(load('in').distinct(:parallel => 4), 'out') }
         @interpreter.to_pig_latin.should match(/DISTINCT \w+ PARALLEL 4/)
@@ -178,7 +178,7 @@ describe Piglet do
         end
         @interpreter.to_pig_latin.should match(/CROSS \w+, \w+/)
       end
-      
+
       it 'outputs a CROSS statement with many relations' do
         @interpreter.interpret do
           a = load('in1')
@@ -190,7 +190,7 @@ describe Piglet do
         end
         @interpreter.to_pig_latin.should match(/CROSS \w+, \w+, \w+, \w+/)
       end
-      
+
       it 'outputs a CROSS statement with a PARALLEL clause' do
         @interpreter.interpret do
           a = load('in1')
@@ -213,7 +213,7 @@ describe Piglet do
         end
         @interpreter.to_pig_latin.should match(/UNION \w+, \w+/)
       end
-      
+
       it 'outputs a UNION statement with many relations' do
         @interpreter.interpret do
           a = load('in1')
@@ -226,7 +226,7 @@ describe Piglet do
         @interpreter.to_pig_latin.should match(/UNION \w+, \w+, \w+, \w+/)
       end
     end
-    
+
     describe 'SAMPLE' do
       it 'outputs a SAMPLE statement' do
         @interpreter.interpret { dump(load('in').sample(10)) }
@@ -246,86 +246,86 @@ describe Piglet do
         @interpreter.interpret { dump(load('in').foreach { :a }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ GENERATE a/)
       end
-      
+
       it 'outputs a FOREACH … GENERATE statement with a list of fields' do
         @interpreter.interpret { dump(load('in').foreach { [:a, :b, :c] }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ GENERATE a, b, c/)
       end
-      
+
       it 'outputs a FOREACH … GENERATE statement with fields resolved from the relation' do
         @interpreter.interpret { dump(load('in').foreach { [a, b, c] }) }
         @interpreter.to_pig_latin.should match(/FOREACH (\w+) GENERATE a, b, c/)
       end
-      
+
       it 'outputs a FOREACH … GENERATE statement with fields resolved from the relation with positional syntax' do
         @interpreter.interpret { dump(load('in').foreach { [self[0], self[1], self[2]] }) }
         @interpreter.to_pig_latin.should match(/FOREACH (\w+) GENERATE \$0, \$1, \$2/)
       end
-      
+
       it 'outputs a FOREACH … GENERATE statement with aggregate functions applied to the fields' do
         @interpreter.interpret { dump(load('in').foreach { [a.max, b.min, c.avg] }) }
         @interpreter.to_pig_latin.should match(/FOREACH (\w+) GENERATE MAX\(a\), MIN\(b\), AVG\(c\)/)
       end
-      
+
       it 'outputs a FOREACH … GENERATE statement with fields that access inner fields' do
         @interpreter.interpret { dump(load('in').foreach { [a.b, b.c, c.d] }) }
         @interpreter.to_pig_latin.should match(/FOREACH (\w+) GENERATE a.b, b.c, c.d/)
       end
-      
+
       it 'outputs a FOREACH … GENERATE statement that includes field aliasing' do
         @interpreter.interpret { dump(load('in').foreach { [a.b.as(:c), a.b.as(:d)] }) }
         @interpreter.to_pig_latin.should match(/FOREACH (\w+) GENERATE a.b AS c, a.b AS d/)
       end
     end
-    
+
     describe 'FOREACH ... { ... GENERATE }' do
       it 'outputs a FOREACH ... { ... GENERATE } statement for named fields' do
         @interpreter.interpret { dump(load('in').nested_foreach { [a, b, c] }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = a;\s+(\w+) = b;\s+(\w+) = c;\s+GENERATE \1, \2, \3;\s+\}/m)
       end
-      
+
       it 'outputs a FOREACH ... { ... GENERATE } statement for positional fields' do
         @interpreter.interpret { dump(load('in').nested_foreach { [self[0], self[1], self[2]] }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = \$0\;\s+(\w+) = \$1\;\s+(\w+) = \$2\;\s+GENERATE \1, \2, \3\;\s+\}/m)
       end
-      
+
       it 'outputs a FOREACH ... { ... GENERATE } statement with aggregate functions applied to fields' do
         @interpreter.interpret { dump(load('in').nested_foreach { [a.max, b.min, c.avg] }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = a;\s+(\w+) = MAX\(\1\);\s+(\w+) = b;\s+(\w+) = MIN\(\3\);\s+(\w+) = c;\s+(\w+) = AVG\(\5\);\s+GENERATE \2, \4, \6;\s+\}/m)
       end
-      
+
       it 'outputs a FOREACH ... { ... GENERATE } statement with fields that access inner fields' do
         @interpreter.interpret { dump(load('in').nested_foreach { [a.b, b.c]}) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = a;\s+(\w+) = \1.b;\s+(\w+) = b;\s+(\w+) = \3.c;\s+GENERATE \2, \4;\s+\}/m)
       end
-      
+
       it 'outputs a FOREACH ... { ... GENERATE } statement with user defined functions' do
-        @interpreter.interpret do 
+        @interpreter.interpret do
           define('my_udf', :function => 'com.example.My')
           dump(load('in').nested_foreach { [my_udf(a, 3, "hello")] })
         end
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = a;\s+(\w+) = my_udf\(\1, 3, 'hello'\);\s+GENERATE \2;\s+\}/)
       end
-      
+
       it 'outputs a FOREACH ... { ... GENERATE } statement with bag methods' do
         @interpreter.interpret { dump(load('in').nested_foreach { [self[1].distinct.sample(0.3).limit(5).order(:x).filter { x == 5 }] }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = \$1;\s+(\w+) = DISTINCT \1;\s+(\w+) = SAMPLE \2 0.3;\s+(\w+) = LIMIT \3 5;\s+(\w+) = ORDER \4 BY x;\s+(\w+) = FILTER \5 BY x == 5;\s+GENERATE \6;\s+\}/m)
       end
-      
+
       it 'outputs a FOREACH ... { ... GENERATE } statement with field aliasing' do
         @interpreter.interpret { dump(load('in').nested_foreach { a = b.distinct; [a.as(:c)] }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = b;\s+(\w+) = DISTINCT \1;\s+GENERATE \2 AS c;\s+\}/m)
       end
-      
+
       it 'outputs a FOREACH ... { ... GENERATE } statement with flatten' do
         @interpreter.interpret { dump(load('in').nested_foreach { [a.flatten] }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = a;\s+(\w+) = FLATTEN\(\1\);\s+GENERATE \2;\s+\}/m)
       end
-      
+
       it 'outputs a FOREACH ... { ... GENERATE } statement with projections on direct expressions' do
         @interpreter.interpret { dump(load('in').nested_foreach { s = a.filter { b == 'test' } ; [s[0]] }) }
         @interpreter.to_pig_latin.should match(/FOREACH \w+ \{\s+(\w+) = a;\s+(\w+) = FILTER \1 BY b == test;\s+(\w+) = \2\.\$0;\s+GENERATE \3;\s+\}/m)
-      end      
+      end
     end
 
     describe 'FILTER' do
@@ -339,7 +339,7 @@ describe Piglet do
         @interpreter.to_pig_latin.should match(/FILTER \w+ BY \(a > b\) AND \(c != 3\)/)
       end
     end
-    
+
     describe 'SPLIT' do
       it 'outputs a SPLIT statement' do
         @interpreter.interpret do
@@ -350,24 +350,24 @@ describe Piglet do
         @interpreter.to_pig_latin.should match(/SPLIT \w+ INTO \w+ IF first >= 0, \w+ IF second < 0/)
       end
     end
-    
+
     describe 'ORDER' do
       it 'outputs an ORDER statement' do
         @interpreter.interpret { dump(load('in').order(:a)) }
         @interpreter.to_pig_latin.should match(/ORDER \w+ BY a/)
       end
-      
+
       it 'outputs an ORDER statement with multiple fields' do
         @interpreter.interpret { dump(load('in').order(:a, :b)) }
         @interpreter.to_pig_latin.should match(/ORDER \w+ BY a, b/)
       end
-      
+
       it 'outputs an ORDER statement with ASC and DESC' do
         @interpreter.interpret { dump(load('in').order([:a, :asc], [:b, :desc])) }
         @interpreter.to_pig_latin.should match(/ORDER \w+ BY a ASC, b DESC/)
       end
     end
-    
+
     describe 'JOIN' do
       it 'outputs a JOIN statement' do
         @interpreter.interpret do
@@ -399,7 +399,7 @@ describe Piglet do
         @interpreter.to_pig_latin.should match(/JOIN \w+ BY \w+, \w+ BY \w+ USING "replicated"/)
       end
     end
-    
+
     describe 'COGROUP' do
       it 'outputs a COGROUP statement' do
         @interpreter.interpret do
@@ -410,7 +410,7 @@ describe Piglet do
         end
         @interpreter.to_pig_latin.should match(/COGROUP \w+ BY \w+, \w+ BY \w+/)
       end
-      
+
       it 'outputs a COGROUP statement with multiple join fields' do
         @interpreter.interpret do
           a = load('in1')
@@ -430,7 +430,7 @@ describe Piglet do
         end
         @interpreter.to_pig_latin.should match(/COGROUP \w+ BY \w+, \w+ BY \w+ PARALLEL 5/)
       end
-      
+
       it 'outputs a COGROUP statement with INNER and OUTER' do
         @interpreter.interpret do
           a = load('in1')
@@ -442,7 +442,7 @@ describe Piglet do
         @interpreter.to_pig_latin.should match(/\w+ BY y OUTER/)
       end
     end
-    
+
     describe 'STREAM' do
       it 'outputs a STREAM statement with a command reference' do
         output = @interpreter.to_pig_latin do
@@ -470,7 +470,7 @@ describe Piglet do
         end
         output.should match(/STREAM \w+ THROUGH `swoosch` AS \(a:bytearray, b:bytearray\)/)
       end
-      
+
       it 'outputs a STREAM statement with many relations' do
         output = @interpreter.to_pig_latin do
           x = load('in1')
@@ -490,7 +490,7 @@ describe Piglet do
         output = @interpreter.to_pig_latin { define('plunk', :function => 'com.example.Plunk') }
         output.should include('DEFINE plunk com.example.Plunk')
       end
-      
+
       it 'outputs a DEFINE with the correct alias and command string' do
         output = @interpreter.to_pig_latin { define('plunk', :command => 'plunk.rb') }
         output.should include('DEFINE plunk `plunk.rb`')
@@ -547,7 +547,7 @@ describe Piglet do
 
       it 'outputs a DEFINE with with really complex options' do
         output = @interpreter.to_pig_latin do
-          define('plunk', :command => 'plunk.rb', 
+          define('plunk', :command => 'plunk.rb',
             :input => [
               {:from => 'some/path', :using => :pig_storage},
               {:from => :stdin, :using => 'HelloWorld(\'test\')'}
@@ -562,7 +562,7 @@ describe Piglet do
         end
         output.should include('DEFINE plunk `plunk.rb` INPUT(\'some/path\' USING PigStorage, stdin USING HelloWorld(\'test\')) OUTPUT(\'some/other/path\' USING BinStorage, stdout USING SomeOtherMechanism()) SHIP(\'to/here\') CACHE(\'first\', \'second\', \'third\')')
       end
-      
+
       it 'makes the defined UDF available as a method in the interpreter scope, so that it can be used in a FOREACH and it\'s result renamed using AS' do
         output = @interpreter.to_pig_latin do
           define('my_udf', :function => 'com.example.My')
@@ -573,7 +573,7 @@ describe Piglet do
         output.should match(/FOREACH \w+ GENERATE my_udf\('foo', 3, 'hello \\'world\\'', \$0\) AS bar/)
       end
     end
-    
+
     describe 'REGISTER' do
       it 'outputs a REGISTER statement with the path to the specified JAR' do
         output = @interpreter.to_pig_latin { register('path/to/lib.jar') }
@@ -587,12 +587,12 @@ describe Piglet do
       @interpreter.interpret { store(load('in'), 'out') }
       @interpreter.to_pig_latin.should match(/(\w+) = LOAD 'in';\nSTORE \1 INTO 'out';/)
     end
-    
+
     it 'aliases both a loaded relation and a grouped relation and uses the latter in the STORE statement' do
       @interpreter.interpret { store(load('in', :schema => [:a]).group(:a), 'out') }
       @interpreter.to_pig_latin.should match(/(\w+) = LOAD 'in' AS \(a\);\n(\w+) = GROUP \1 BY a;\nSTORE \2 INTO 'out';/)
     end
-    
+
     it 'aliases a whole row of statements' do
       @interpreter.interpret do
         a = load('in', :schema => [:a])
@@ -603,7 +603,7 @@ describe Piglet do
       end
       @interpreter.to_pig_latin.should match(/(\w+) = LOAD 'in' AS \(a\);\n(\w+) = GROUP \1 BY a;\n(\w+) = GROUP \2 BY a;\n(\w+) = GROUP \3 BY a;\nSTORE \4 INTO 'out';/)
     end
-    
+
     it 'outputs the statements for an alias only once, regardless of home many times it is stored' do
       @interpreter.interpret do
         a = load('in')
@@ -622,7 +622,7 @@ describe Piglet do
       end
       output.should include('x AND (y OR z) AND w')
     end
-    
+
     it 'doesn\'t parenthesizes expressions with the same operator' do
       output = @interpreter.to_pig_latin do
         store(load('in').filter { self.x.and(self.y.and(self.z)).and(self.w) }, 'out')
@@ -651,7 +651,7 @@ describe Piglet do
       output.should include('(NOT x) AND y')
     end
   end
-  
+
   context 'long and complex scripts' do
     before do
       @interpreter.interpret do
@@ -685,7 +685,7 @@ describe Piglet do
     it 'outputs the correct number of LOAD statements' do
       @output.scan(/LOAD/).size.should eql(1)
     end
-    
+
     it 'outputs the correct number of STORE statements' do
       @output.scan(/STORE/).size.should eql(3)
     end
@@ -707,7 +707,7 @@ describe Piglet do
       schema.field_names.should eql([:a, :b])
       schema.field_type(:a).should eql(:chararray)
     end
-    
+
     it 'knows the schema of a relation returned by #load, without types' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -718,7 +718,7 @@ describe Piglet do
       schema.field_names.should eql([:a, :b])
       schema.field_type(:a).should eql(:bytearray)
     end
-    
+
     it 'knows the schema of a relation returned by #load, with and without types' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -729,7 +729,7 @@ describe Piglet do
       schema.field_names.should eql([:a, :b])
       schema.field_type(:a).should eql(:float)
     end
-    
+
     it 'does not know anything about the schema of a relation returned by #load if no schema was given' do
       relation = catch(:relation) do
         @interpreter.interpret do
@@ -738,7 +738,7 @@ describe Piglet do
       end
       relation.schema.should be_nil
     end
-    
+
     it 'knows the schema of a relation derived through non-schema-changing operations' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -750,7 +750,7 @@ describe Piglet do
       schema.field_type(:a).should eql(:float)
       schema.field_type(:b).should eql(:int)
     end
-    
+
     it 'knows the schema of a relation grouped on one field' do
       relation = catch(:relation) do
         @interpreter.interpret do
@@ -795,7 +795,7 @@ describe Piglet do
       schema.field_type(:a).should eql(:float)
       schema.field_type(:b).should eql(:int)
     end
-    
+
     it 'knows the schema of a relation cross joined with another' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -857,7 +857,7 @@ describe Piglet do
       schema.field_names.should eql([:a])
       schema.field_type(:a).should eql(:float)
     end
-    
+
     it 'knows the schema of a relation projection containing a call to MAX' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -869,7 +869,7 @@ describe Piglet do
       schema.field_names.should eql([nil])
       schema.field_type(0).should eql(:float)
     end
-    
+
     it 'knows the schema of a relation projection containing a call to COUNT' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -881,7 +881,7 @@ describe Piglet do
       schema.field_names.should eql([nil])
       schema.field_type(0).should eql(:long)
     end
-    
+
     it 'knows the schema of a relation projection containing a field rename' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -892,7 +892,7 @@ describe Piglet do
       end
       schema.field_names.should eql([:x])
     end
-    
+
     it 'knows the schema of a relation projection containing a literal string' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -903,7 +903,7 @@ describe Piglet do
       end
       schema.field_type(0).should eql(:chararray)
     end
-    
+
     it 'knows the schema of a relation projection containing a literal integer' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -914,7 +914,7 @@ describe Piglet do
       end
       schema.field_type(0).should eql(:int)
     end
-    
+
     it 'knows the schema of a relation projection containing a literal float' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -925,7 +925,7 @@ describe Piglet do
       end
       schema.field_type(0).should eql(:double)
     end
-    
+
     it 'knows the schema of a relation streamed through a command (if there\'s a schema)' do
       schema = catch(:schema) do
         @interpreter.interpret do
@@ -937,7 +937,7 @@ describe Piglet do
       schema.field_names.should eql([:x])
       schema.field_type(:x).should eql(:chararray)
     end
-    
+
   end
 
 end

@@ -4,7 +4,7 @@ module Piglet
   module Udf
     class Define
       include Piglet::Inout::StorageTypes
-      
+
       def initialize(ali4s, options=nil)
         options ||= {}
         @alias = ali4s
@@ -15,7 +15,7 @@ module Piglet
         @ship = options[:ship]
         @cache = options[:cache]
       end
-      
+
       def to_s
         if @command
           str = "DEFINE #{@alias} `#{@command}`"
@@ -28,9 +28,9 @@ module Piglet
           "DEFINE #{@alias} #{@function}"
         end
       end
-      
+
     private
-    
+
       def paths_to_s(kind, paths)
         unless Enumerable === paths
           paths = [paths]
@@ -38,7 +38,7 @@ module Piglet
         path_str = paths.map { |p| "'#{p}'" }.join(', ')
         " #{kind.to_s.upcase}(#{path_str})"
       end
-            
+
       def io_to_s(method, description)
         case description
         when Symbol, String

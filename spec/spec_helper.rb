@@ -11,7 +11,7 @@ require 'spec/autorun'
 
 class PlainRelation
   include Piglet::Relation::Relation
-  
+
   def initialize(interpreter)
     @interpreter = interpreter
   end
@@ -19,5 +19,5 @@ end
 
 
 Spec::Runner.configure do |config|
-  
+
 end

@@ -14,9 +14,9 @@ module Piglet
         end
         "%#{@kind} #{@name} #{v}"
       end
-      
+
     private
-    
+
       def escape(str)
         str.to_s.gsub(/('|\\)/) { |m| "\\#{$1}" }
       end

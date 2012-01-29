@@ -20,7 +20,7 @@ describe Literal do
     it 'knows that the type of a float is double' do
       Literal.new(3.14).type.should eql(:double)
     end
-    
+
     it 'uses the specified type instead of the inferred' do
       Literal.new(3.14, :type => :float).type.should eql(:float)
     end

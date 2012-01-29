@@ -7,7 +7,7 @@ include Piglet::Schema
 
 
 describe Tuple do
-  
+
   describe '.parse' do
     it 'can parse a non-typed, single field description' do
       tuple = Tuple.parse([:a])
@@ -66,13 +66,13 @@ describe Tuple do
       tuple.field_type(:a).should be_a(Bag)
       tuple.field_type(:a).field_names.should eql([:c, :d])
     end
-    
+
     it 'can parse a description that lacks field names (and fall back to making the fields accessible by index)' do
       tuple = Tuple.parse([[nil, :chararray], [nil, :int]])
       tuple.field_type(1).should eql(:int)
     end
   end
-  
+
   describe '#union' do
     it 'creates a new tuple with the fields from two tuples' do
       t1 = Tuple.parse([:a, :b, :c])
@@ -80,7 +80,7 @@ describe Tuple do
       t3 = t1.union(t2)
       t3.field_names.should eql([:a, :b, :c, :d, :e, :f])
     end
-    
+
     it 'creates a new tuple with the fields from three tuples' do
       t1 = Tuple.parse([:a, :b, :c])
       t2 = Tuple.parse([:d, :e, :f])
@@ -109,7 +109,7 @@ describe Tuple do
     it 'returns the schema string for a simple untyped schema' do
       Tuple.parse([:a, :b]).to_s.should eql('(a:bytearray, b:bytearray)')
     end
-    
+
     it 'returns the schema string for a simple typed schema' do
       Tuple.parse([[:a, :chararray], [:b, :int]]).to_s.should eql('(a:chararray, b:int)')
     end
@@ -119,5 +119,5 @@ describe Tuple do
       Tuple.parse(description).to_s.should eql('(a:tuple (x:int, y:float), b:bag {w:bytearray})')
     end
   end
-  
+
 end

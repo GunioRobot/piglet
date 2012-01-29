@@ -4,7 +4,7 @@ module Piglet
   module Field
     class Reference # :nodoc:
       include Field
-    
+
       def initialize(name, relation=nil, options=nil)
         options ||= {}
         @name, @parent = name, relation
@@ -12,7 +12,7 @@ module Piglet
         @type = options[:type]
         @predecessors = [relation] unless relation.nil?
       end
-    
+
       def simple?
         true
       end
@@ -24,7 +24,7 @@ module Piglet
           super
         end
       end
-    
+
       def to_s(inner=false)
         if @explicit_ancestry
           if @parent.respond_to?(:alias)

@@ -6,7 +6,7 @@ module Piglet
       def initialize(path)
         @path = path
       end
-      
+
       def to_s
         "REGISTER #{@path}"
       end

@@ -7,26 +7,26 @@ module Piglet
   class Interpreter
     def initialize(&block)
       @top_level_statements = [ ]
-      
+
       interpret(&block) if block_given?
     end
-  
+
     def interpret(&block)
       if block_given?
         instance_eval(&block)
       end
-    
+
       self
     end
-    
+
     def to_pig_latin(&block)
       interpret(&block) if block_given?
-      
+
       return '' if @top_level_statements.empty?
-      
+
       handled_relations = Set.new
       statements = [ ]
-      
+
       @top_level_statements.each do |top_level_statement|
         if top_level_statement.respond_to?(:relation) && ! top_level_statement.relation.nil?
           assignments(top_level_statement.relation, handled_relations).each do |assignment|
@@ -35,10 +35,10 @@ module Piglet
         end
         statements << top_level_statement
       end
-      
+
       statements.flatten.map { |s| s.to_s }.join(";\n") + ";\n"
     end
-    
+
     def next_relation_alias
       @counter ||= 0
       @counter += 1
@@ -63,7 +63,7 @@ module Piglet
     def load(path, options={})
       Inout::Load.new(path, self, options)
     end
-  
+
     # STORE
     #
     #   store(x, 'some/path') # => STORE x INTO 'some/path'
@@ -72,28 +72,28 @@ module Piglet
     def store(relation, path, options={})
       @top_level_statements << Inout::Store.new(relation, path, options)
     end
-  
+
     # DUMP
     #
     #   dump(x) # => DUMP x
     def dump(relation)
       @top_level_statements << Inout::Dump.new(relation)
     end
-  
+
     # ILLUSTRATE
     #
     #   illustrate(x) # => ILLUSTRATE x
     def illustrate(relation)
       @top_level_statements << Inout::Illustrate.new(relation)
     end
-  
+
     # DESCRIBE
     #
     #   describe(x) # => DESCRIBE x
     def describe(relation)
       @top_level_statements << Inout::Describe.new(relation)
     end
-  
+
     # EXPLAIN
     #
     #   explain    # => EXPLAIN
@@ -101,14 +101,14 @@ module Piglet
     def explain(relation=nil)
       @top_level_statements << Inout::Explain.new(relation)
     end
-    
+
     # REGISTER
     #
     #   register 'path/to/lib.jar' # => REGISTER path/to/lib.jar
     def register(path)
       @top_level_statements << Udf::Register.new(path)
     end
-    
+
     # DEFINE
     #
     #   define('test', :function => 'com.example.Test')             # => DEFINE test com.example.Test
@@ -138,7 +138,7 @@ module Piglet
         end
       end
     end
-    
+
     # %declare
     #
     #   declare(:my_var, 'value')                  # => %declare my_var 'value'
@@ -147,7 +147,7 @@ module Piglet
     def declare(name, value, options=nil)
       @top_level_statements << Param::Declare.new(name, value, options)
     end
-    
+
     # %default
     #
     #   default(:my_var, 'value')                  # => %default my_var 'value'
@@ -156,9 +156,9 @@ module Piglet
     def default(name, value, options=nil)
       @top_level_statements << Param::Default.new(name, value, options)
     end
-    
+
   private
-  
+
     def assignments(relation, ignore_set)
       return [] if ignore_set.include?(relation)
       assignment = Assignment.new(relation)
@@ -170,7 +170,7 @@ module Piglet
       end
     end
   end
-  
+
 private
 
   class Assignment # :nodoc:

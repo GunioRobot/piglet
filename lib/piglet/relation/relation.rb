@@ -10,13 +10,13 @@ module Piglet
       def alias
         @alias ||= @interpreter.next_relation_alias
       end
-      
+
       def next_field_alias
         @field_counter ||= 0
         @field_counter += 1
         "#{self.alias}_field_#{@field_counter}"
       end
-  
+
       # GROUP
       #
       #   x.group(:a)                           # => GROUP x By a
@@ -26,7 +26,7 @@ module Piglet
         grouping, options = split_at_options(args)
         Group.new(self, @interpreter, [grouping].flatten, options)
       end
-  
+
       # DISTINCT
       #
       #   x.distinct                 # => DISTINCT x
@@ -45,7 +45,7 @@ module Piglet
       def cogroup(description)
         Cogroup.new(self, @interpreter, description)
       end
-  
+
       # CROSS
       #
       #   x.cross(y)                      # => CROSS x, y
@@ -55,7 +55,7 @@ module Piglet
         relations, options = split_at_options(args)
         Cross.new(([self] + relations).flatten, @interpreter, options)
       end
-  
+
       # FILTER
       #
       #   x.filter { a == b }          # => FILTER x BY a == b
@@ -64,7 +64,7 @@ module Piglet
         context = BlockContext.new(self, @interpreter)
         Filter.new(self, @interpreter, context.instance_eval(&block))
       end
-  
+
       # FOREACH ... GENERATE
       #
       #   x.foreach { a }            # => FOREACH x GENERATE a
@@ -77,7 +77,7 @@ module Piglet
         context = BlockContext.new(self, @interpreter)
         Foreach.new(self, @interpreter, context.instance_eval(&block))
       end
-      
+
       # FOREACH ... { ... GENERATE }
       #
       #   x.nested_foreach { [a.distinct] } # => FOREACH x { a1 = DISTINCT a; GENERATE a1 }
@@ -87,7 +87,7 @@ module Piglet
         context = BlockContext.new(self, @interpreter)
         NestedForeach.new(self, @interpreter, context.instance_eval(&block))
       end
-  
+
       # JOIN
       #
       #   x.join(x => :a, y => :b)                        # => JOIN x BY a, y BY b
@@ -97,14 +97,14 @@ module Piglet
       def join(description)
         Join.new(self, @interpreter, description)
       end
-  
+
       # LIMIT
       #
       #   x.limit(10) # => LIMIT x 10
       def limit(n)
         Limit.new(self, @interpreter, n)
       end
-  
+
       # ORDER
       #
       #   x.order(:a)                      # => ORDER x BY a
@@ -121,14 +121,14 @@ module Piglet
         fields = *fields
         Order.new(self, @interpreter, fields, options)
       end
-  
+
       # SAMPLE
       #
       #   x.sample(5) # => SAMPLE x 5;
       def sample(n)
         Sample.new(self, @interpreter, n)
       end
-    
+
       # SPLIT
       #
       #   y, z = x.split { [a <= 3, b > 4] } # => SPLIT x INTO y IF a <= 3, z IF a > 4
@@ -136,7 +136,7 @@ module Piglet
         context = BlockContext.new(self, @interpreter)
         Split.new(self, @interpreter, context.instance_eval(&block)).shards
       end
-  
+
       # STREAM
       #
       #   x.stream(:command => 'cut -f 3')       # => STREAM x THROUGH `cut -f 3`
@@ -147,7 +147,7 @@ module Piglet
         fields, options = split_at_options(args)
         Stream.new(self, @interpreter, fields, options)
       end
-  
+
       # UNION
       #
       #   x.union(y)    # => UNION x, y
@@ -160,7 +160,7 @@ module Piglet
         type = schema.field_type(name) rescue nil
         Field::Reference.new(name, self, :type => type)
       end
-      
+
       def schema
         if @sources.nil?
           raise Piglet::Schema::SchemaError, 'Could not determine the schema since there was no source relation and this relation does not define its own schema'
@@ -178,7 +178,7 @@ module Piglet
           super
         end
       end
-    
+
       def [](n)
         field("\$#{n}")
       end
@@ -186,11 +186,11 @@ module Piglet
       def hash
         self.alias.hash
       end
-  
+
       def eql?(other)
         other.is_a?(Relation) && other.alias == self.alias
       end
-  
+
     private
 
       def split_at_options(parameters)

@@ -4,7 +4,7 @@ module Piglet
   module Relation
     class Stream # :nodoc:
       include Relation
-      
+
       def initialize(source, interpreter, args, options=nil)
         @interpreter = interpreter
         options ||= {}
@@ -17,7 +17,7 @@ module Piglet
         @command = options[:command]
         @schema = options[:schema]
       end
-      
+
       def schema
         if @schema
           Piglet::Schema::Tuple.parse(@schema)
@@ -25,12 +25,12 @@ module Piglet
           nil
         end
       end
-      
+
       def to_s
         source_str = @sources.map { |s| s.alias }.join(', ')
         str = "STREAM #{source_str} THROUGH"
         if @command_reference
-          str << " #{@command_reference}" 
+          str << " #{@command_reference}"
         else
           str << " `#{@command}`"
         end

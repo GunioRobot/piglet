@@ -4,12 +4,12 @@ module Piglet
   module Relation
     class Group # :nodoc:
       include Relation
-    
+
       def initialize(relation, interpreter, grouping, options={})
         options ||= {}
         @sources, @interpreter, @grouping, @parallel = [relation], interpreter, grouping, options[:parallel]
       end
-      
+
       def schema
         parent = @sources.first
         parent_schema = parent.schema
@@ -25,7 +25,7 @@ module Piglet
           [parent.alias.to_sym, Piglet::Schema::Bag.new(parent_schema)]
         ])
       end
-    
+
       def to_s
         str = "GROUP #{@sources.first.alias} BY "
         if @grouping.size > 1

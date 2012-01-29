@@ -4,7 +4,7 @@ module Piglet
   module Relation
     class Join # :nodoc:
       include Relation
-    
+
       def initialize(relation, interpreter, description)
         @interpreter = interpreter
         @join_fields = Hash[*description.select { |k, v| k.is_a?(Relation) }.flatten]
@@ -12,12 +12,12 @@ module Piglet
         @using = description[:using]
         @parallel = description[:parallel]
       end
-      
+
       def schema
         schemas = @sources.map { |s| s.schema }
         schemas.first.union(schemas[1..-1])
       end
-    
+
       def to_s
         joins = @sources.map { |s| "#{s.alias} BY #{@join_fields[s]}" }.join(', ')
         str  = "JOIN #{joins}"

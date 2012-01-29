@@ -4,14 +4,14 @@ module Piglet
   module Relation
     class Cogroup # :nodoc:
       include Relation
-    
+
       def initialize(relation, interpreter, description)
         @interpreter = interpreter
         @join_fields = description.reject { |k, v| ! (k.is_a?(Relation)) }
         @sources = @join_fields.keys
         @parallel = description[:parallel]
       end
-      
+
       def schema
         first_schema = @sources.first.schema
         join_fields = @join_fields[@sources.first]
@@ -26,7 +26,7 @@ module Piglet
         end
         Piglet::Schema::Tuple.parse(description)
       end
-    
+
       def to_s
         joins = @sources.map do |s|
           fields = @join_fields[s]

@@ -5,11 +5,11 @@ module Piglet
     class Store # :nodoc:
       include StorageTypes
       include Output
-    
+
       def initialize(relation, path, options={})
         @relation, @path, @using = relation, path, options[:using]
       end
-    
+
       def to_s
         str  = super
         str << " INTO '#{@path}'"

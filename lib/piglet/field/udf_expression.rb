@@ -2,12 +2,12 @@ module Piglet
   module Field
     class UdfExpression
       include Field
-      
+
       def initialize(ali4s, *args)
         @alias, @args = ali4s, args
         @predecessors = args.select { |arg| arg.respond_to? :field_alias }
       end
-      
+
       def to_s(inner=false)
         if inner
           "#{@alias}(#{args_to_inner_s(@args)})"
@@ -15,9 +15,9 @@ module Piglet
           "#{@alias}(#{args_to_s(@args)})"
         end
       end
-      
+
     private
-      
+
       def args_to_s(arg)
         case arg
         when String
@@ -28,7 +28,7 @@ module Piglet
           arg
         end
       end
-      
+
       def args_to_inner_s(arg)
         if arg.is_a? String
           "'#{escape(arg)}'"

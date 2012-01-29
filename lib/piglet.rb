@@ -3,12 +3,12 @@
 # :main: README.rdoc
 module Piglet # :nodoc:
   VERSION = '0.3.0'
-  
+
   class PigletError < StandardError; end
   class NotSupportedError < PigletError; end
-  
+
   autoload :Interpreter, 'piglet/interpreter'
-  
+
   module Inout
     autoload :Describe, 'piglet/inout/describe'
     autoload :Dump, 'piglet/inout/dump'
@@ -19,7 +19,7 @@ module Piglet # :nodoc:
     autoload :StorageTypes, 'piglet/inout/storage_types'
     autoload :Store, 'piglet/inout/store'
   end
-  
+
   module Relation
     autoload :BlockContext, 'piglet/relation/block_context'
     autoload :Cogroup, 'piglet/relation/cogroup'
@@ -38,7 +38,7 @@ module Piglet # :nodoc:
     autoload :Stream, 'piglet/relation/stream'
     autoload :Union, 'piglet/relation/union'
   end
-  
+
   module Field
     autoload :BinaryConditional, 'piglet/field/binary_conditional'
     autoload :CallExpression, 'piglet/field/call_expression'
@@ -53,19 +53,19 @@ module Piglet # :nodoc:
     autoload :SuffixExpression, 'piglet/field/suffix_expression'
     autoload :UdfExpression, 'piglet/field/udf_expression'
   end
-  
+
   module Schema
     autoload :Bag, 'piglet/schema/bag'
     autoload :Tuple, 'piglet/schema/tuple'
-    
+
     class SchemaError < PigletError; end
   end
-  
+
   module Udf
     autoload :Define, 'piglet/udf/define'
     autoload :Register, 'piglet/udf/register'
   end
-  
+
   module Param
     autoload :Declare, 'piglet/param/declare'
     autoload :Default, 'piglet/param/default'

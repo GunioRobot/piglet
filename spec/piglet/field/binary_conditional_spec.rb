@@ -18,23 +18,23 @@ describe BinaryConditional do
       @expressions[type].stub!(:type).and_return(type)
     end
   end
-  
+
   describe '#type' do
     it 'returns the type of the true expression' do
       bincond = BinaryConditional.new(@true_test, @expressions[:int], @expressions[:float])
       bincond.type.should == :int
     end
-    
+
     it 'returns int if the true expression is an Integer' do
       bincond = BinaryConditional.new(@true_test, 3, @expressions[:float])
       bincond.type.should == :int
     end
-    
+
     it 'returns float if the true expression is a Float' do
       bincond = BinaryConditional.new(@true_test, 3.14, @expressions[:float])
       bincond.type.should == :float
     end
-    
+
     it 'returns boolean if the true expression is true' do
       bincond = BinaryConditional.new(@true_test, true, @expressions[:float])
       bincond.type.should == :boolean
@@ -45,5 +45,5 @@ describe BinaryConditional do
       bincond.type.should == :boolean
     end
   end
-  
+
 end

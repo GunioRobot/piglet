@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-module Piglet  
+module Piglet
   module Inout
     module StorageTypes # :nodoc:
       LOAD_STORE_FUNCTIONS = {
@@ -11,7 +11,7 @@ module Piglet
         :pig_dump => 'PigDump',
         :text_loader => 'TextLoader'
       }
-    
+
       def resolve_load_store_function(name)
         LOAD_STORE_FUNCTIONS[name] || name.to_s
       end

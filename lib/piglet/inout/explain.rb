@@ -4,7 +4,7 @@ module Piglet
   module Inout
     class Explain # :nodoc:
       include Output
-    
+
       def to_s
         if relation.nil?
           "EXPLAIN"

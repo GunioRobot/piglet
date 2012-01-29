@@ -21,14 +21,14 @@ describe Piglet::Relation::Split do
     it 'outputs all x IF y expressions' do
       @split.to_s.should match(/SPLIT rel INTO \w+ IF expr[12], \w+ IF expr[12]/)
     end
-    
+
     it 'contains the names of all the shard relations' do
       @shards = @split.shards
       @split.to_s.should include("#{@shards[0].alias} IF expr1")
       @split.to_s.should include("#{@shards[1].alias} IF expr2")
     end
   end
-  
+
   describe '#shards' do
     it 'returns the same number of shards as there are expressions' do
       @split.shards.size.should == 2
